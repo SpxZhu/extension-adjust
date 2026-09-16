@@ -1,0 +1,8 @@
+script: "/example/main.gui_script"
+fonts {
+  name: "default"
+  font: "/builtins/fonts/default.font"
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT
+max_nodes: 128

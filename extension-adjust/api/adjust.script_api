@@ -1,0 +1,136 @@
+- name: adjust
+  type: table
+  desc: "require 'extension-adjust.adjust'. Adjust SDK 5.8.0 runtime API. Non-mobile platforms log and return unsupported."
+  members:
+  - name: initialize
+    type: function
+    desc: "Initialize once using a Lua config table with explicit environment and android/ios app_token. Returns true when queued, or false and a reason."
+    parameters:
+    - name: config
+      type: table
+      desc: "See example/adjust_config.lua."
+  - name: is_supported
+    type: function
+    desc: "True only on Android/iOS with the native bridge loaded."
+  - name: is_initialized
+    type: function
+    desc: "True after local SDK initialization, not proof of server receipt."
+  - name: set_callback
+    type: function
+    desc: "Set function(self, event, data), or nil to clear. Runs on the Defold update thread. Clear in final()."
+    parameters:
+    - name: callback
+      type: function
+      optional: true
+      desc: "Event callback or nil."
+  - name: track_event
+    type: function
+    desc: "Track an event token with optional revenue/currency, store IDs, deduplication_id and parameter tables."
+    parameters:
+    - name: token
+      type: string
+      desc: "Six-character event token."
+    - name: event
+      type: table
+      optional: true
+      desc: "See docs/api.md."
+  - name: track_named_event
+    type: function
+    desc: "Track using the selected platform's event_tokens mapping."
+    parameters:
+    - name: name
+      type: string
+      desc: "Configured event name."
+    - name: event
+      type: table
+      optional: true
+      desc: "Event data."
+  - name: track_ad_revenue
+    type: function
+    desc: "Report source, revenue, currency and optional network/unit/placement/impressions/parameters."
+    parameters:
+    - name: ad
+      type: table
+      desc: "Ad revenue data."
+  - name: get_adid
+    type: function
+    desc: "Asynchronous; receives adid event with data.adid. Non-mobile returns nil."
+  - name: get_attribution
+    type: function
+    desc: "Asynchronous; receives attribution event. Non-mobile returns nil."
+  - name: request_tracking_authorization
+    type: function
+    desc: "iOS only. Can run before initialize, requires ATT usage text and active application. Receives tracking_authorization event."
+  - name: set_global_callback_parameters
+    type: function
+    desc: "Replace global callback parameters. Nil or empty table clears them."
+    parameters:
+    - name: values
+      type: table
+      optional: true
+      desc: "String keys with scalar values."
+  - name: set_global_partner_parameters
+    type: function
+    desc: "Replace global partner parameters. Nil or empty table clears them."
+    parameters:
+    - name: values
+      type: table
+      optional: true
+      desc: "String keys with scalar values."
+- name: attribution
+  type: table
+  desc: "require 'extension-adjust.attribution'. Optional business helpers."
+  members:
+  - name: initialize
+    type: function
+    desc: "Initialize Adjust and load local daily activation state and optional revenue hooks."
+    parameters:
+    - name: config
+      type: table
+      desc: "Lua configuration."
+  - name: set_common_parameters
+    type: function
+    desc: "Replace business event parameters; clear on logout with an empty table."
+    parameters:
+    - name: values
+      type: table
+      optional: true
+      desc: "String keys with scalar values."
+  - name: track_sevent
+    type: function
+    desc: "Track a business event through the sevent token."
+    parameters:
+    - name: name
+      type: string
+      desc: "Business event name."
+    - name: values
+      type: table
+      optional: true
+      desc: "Additional callback parameters."
+  - name: daily_activated
+    type: function
+    desc: "Send dailyActivated at most once per increasing local date."
+  - name: ad_not_ready
+    type: function
+    desc: "Track adNotReady with guid and adType."
+    parameters:
+    - name: guid
+      type: string
+      desc: "Ad request identifier."
+    - name: ad_type
+      type: string
+      desc: "Ad type."
+  - name: track_purchase
+    type: function
+    desc: "Purchase event; defaults to USD. Store transaction, purchase token and deduplication ID are separate."
+    parameters:
+    - name: purchase
+      type: table
+      desc: "Event data with revenue."
+  - name: track_max_ad_revenue
+    type: function
+    desc: "Report a MAX RevenuePaid payload; no automatic accumulation, scaling or deduplication."
+    parameters:
+    - name: ad
+      type: table
+      desc: "Revenue, optional currency (USD default), network, unit, placement, and parameters."

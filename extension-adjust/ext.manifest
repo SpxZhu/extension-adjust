@@ -1,0 +1,9 @@
+name: "AdjustExt"
+
+platforms:
+    ios:
+        context:
+            frameworks: ["SystemConfiguration", "StoreKit"]
+            weakFrameworks: ["AdSupport", "AdServices", "AppTrackingTransparency"]
+            flags: ["-fobjc-arc"]
+            linkFlags: ["-ObjC"]

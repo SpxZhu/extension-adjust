@@ -1,0 +1,82 @@
+local adjust = require "extension-adjust.adjust"
+local attribution = require "extension-adjust.attribution"
+local config = require "example.adjust_config"
+
+local function report(self, message)
+    gui.set_text(self.status, message)
+    print("[Adjust example] " .. message)
+end
+
+local function callback(self, event, data)
+    report(self, event .. " (see console)")
+    print(json.encode(data))
+    if event == "initialized" then
+        attribution.set_common_parameters({testMode=config.environment == "sandbox"})
+    end
+end
+
+local actions = {
+    {"Initialize from Lua config", function(self)
+        adjust.set_callback(callback)
+        return attribution.initialize(config)
+    end},
+    {"Track sandbox test event", function()
+        if config.environment ~= "sandbox" then return false, "Sandbox only" end
+        return attribution.track_sevent("example", {message="Unicode test: 中文 🎮"})
+    end},
+    {"Track sandbox sample ad revenue", function()
+        if config.environment ~= "sandbox" then return false, "Sandbox only" end
+        return attribution.track_max_ad_revenue({revenue=0.001, network="example", unit="example", placement="demo"})
+    end},
+    {"Track sandbox sample purchase", function()
+        if config.environment ~= "sandbox" then return false, "Sandbox only" end
+        local id = "example-" .. tostring(os.time())
+        return attribution.track_purchase({revenue=0.99, product_id="example", transaction_id=id, deduplication_id=id})
+    end},
+    {"Get Adjust ID and attribution", function()
+        local ok, err = adjust.get_adid()
+        adjust.get_attribution()
+        return ok, err
+    end},
+    {"Request ATT (iOS only)", function() return adjust.request_tracking_authorization() end},
+    {"Daily activated (once per local day)", function() return attribution.daily_activated() end},
+    {"Clear callback", function() return adjust.set_callback(nil) end},
+}
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    local title = gui.new_text_node(vmath.vector3(360, 1170, 0), "ADJUST / DEFOLD")
+    gui.set_font(title, "default")
+    gui.set_scale(title, vmath.vector3(1.5, 1.5, 1))
+    self.buttons = {}
+    for i, action in ipairs(actions) do
+        local y = 1040 - (i - 1) * 95
+        local box = gui.new_box_node(vmath.vector3(360, y, 0), vmath.vector3(640, 72, 0))
+        gui.set_color(box, vmath.vector4(0.12, 0.25, 0.35, 1))
+        local label = gui.new_text_node(vmath.vector3(360, y, 0), action[1])
+        gui.set_font(label, "default")
+        self.buttons[i] = box
+    end
+    self.status = gui.new_text_node(vmath.vector3(360, 170, 0), "")
+    gui.set_font(self.status, "default")
+    gui.set_size(self.status, vmath.vector3(650, 140, 0))
+    gui.set_line_break(self.status, true)
+    report(self, adjust.is_supported() and "Edit example/adjust_config.lua before initializing."
+        or "Logging-only platform. All buttons are safe to call.")
+end
+
+function on_input(self, action_id, action)
+    if (action_id == hash("click") or action_id == hash("touch")) and action.pressed then
+        for i, button in ipairs(self.buttons) do
+            if gui.pick_node(button, action.x, action.y) then
+                local ok, err = actions[i][2](self)
+                report(self, ok and "Accepted locally; watch SDK callbacks." or tostring(err or "No data / unsupported"))
+                return true
+            end
+        end
+    end
+end
+
+function final(self)
+    adjust.set_callback(nil)
+end
