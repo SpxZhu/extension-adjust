@@ -18,6 +18,7 @@ tests/                     Lua 行为与原生静态检查脚本
 
 平台依赖固定在 Gradle / Podfile。升级时同步原生初始化事件中的 sdk_version、文档和 CI 验证。
 Android 5.8.0 AAR 的 `SystemLifecycleContentProvider` 自动注册生命周期；请勿额外转发 onResume/onPause。
+扩展的 AndroidManifest.xml 必须保留 `package="com.defold.adjust"`，否则 Defold 清单合并会报 `Missing 'package' declaration`。这是扩展清单的包名；宿主应用包名仍由宿主 `game.project` 的 `[android] package` 配置。
 iOS 生命周期由 SDK 内部通知监听处理。
 
 ## 本地测试

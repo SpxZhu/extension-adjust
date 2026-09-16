@@ -35,6 +35,11 @@ python tests/check_native.py --javac /path/to/javac --android-jar /path/to/andro
 
 ## 完整构建状态
 
+宿主项目 Android 构建曾报告扩展清单 `Missing 'package' declaration`。已在本仓库
+`extension-adjust/manifests/android/AndroidManifest.xml` 补齐 `package="com.defold.adjust"`。
+修复后本地 XML 解析、包名断言、Lua 行为测试（18 passed / 0 failed）和 `git diff --check` 通过；
+尚未重跑 Android 清单合并和完整原生构建，不能据此认定 APK 构建已通过。
+
 尚未完成通过 Defold 构建服务进行的 Android、iOS、HTML5 完整构建。
 Bob 远程构建会向指定服务发送扩展原生源码、平台 manifests 和所需构建数据。
 构建步骤与自建服务选项见 `DEVELOPMENT.md`。示例配置中的 app token 和 event token 当前均为空。
