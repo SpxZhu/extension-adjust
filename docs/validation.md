@@ -40,7 +40,26 @@ python tests/check_native.py --javac /path/to/javac --android-jar /path/to/andro
 修复后本地 XML 解析、包名断言、Lua 行为测试（18 passed / 0 failed）和 `git diff --check` 通过；
 尚未重跑 Android 清单合并和完整原生构建，不能据此认定 APK 构建已通过。
 
-尚未完成通过 Defold 构建服务进行的 Android、iOS、HTML5 完整构建。
+本仓库尚未独立完成通过 Defold 构建服务进行的 Android、iOS、HTML5 完整构建。
 Bob 远程构建会向指定服务发送扩展原生源码、平台 manifests 和所需构建数据。
 构建步骤与自建服务选项见 `DEVELOPMENT.md`。示例配置中的 app token 和 event token 当前均为空。
 完成构建与真机验证后，需更新上述验收状态。
+
+## iOS 头文件修复
+
+`adjust_ios.mm` 原先仅导入 `AdjustSdk/Adjust.h`。Adjust 5.8.0 的该头文件提供主类接口，
+对多种 SDK 类型仅作前置声明；桥接代码访问这些类型的属性、使用 `AdjustDelegate` 协议
+和日志枚举时，需要对应的完整定义。现显式补齐归因、配置、事件、广告收入、四种回调结果
+以及日志的 9 个头文件。SDK 版本仍为 5.8.0，运行逻辑未变。
+
+用户提供的宿主项目 `ios-package.md`（记录日期 2026-09-17）报告：在 0.1.1 基础上
+采用同样的头文件补丁后，使用 Defold 1.14.0、本机 Extender 2.16.0 和 Xcode 16.2，
+完成 arm64-ios 构建、签名打包，并在 iPhone 6s / iOS 15.8 上安装成功。
+该环境还单独处理了 C++ 标准和签名问题；头文件补丁不替代这些配置。
+
+本次已对照本地 Adjust 5.8.0 参考头文件核对这 9 个头文件及所需类型、协议和日志枚举
+定义，`git diff --check` 通过；这属于静态核查，不是编译测试。
+
+上述构建成功结果为宿主项目文档报告，未在本仓库独立复验，也不代表本仓库声明的最低 Defold 版本
+已通过 iOS 验证。本次在 Windows 上未执行 iOS 原生编译、链接或设备测试；
+应用启动、ATT 与 Adjust 实际收数仍需验收。

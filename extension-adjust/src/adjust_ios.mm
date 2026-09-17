@@ -4,6 +4,15 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <AdjustSdk/Adjust.h>
+#import <AdjustSdk/ADJAttribution.h>
+#import <AdjustSdk/ADJConfig.h>
+#import <AdjustSdk/ADJEvent.h>
+#import <AdjustSdk/ADJAdRevenue.h>
+#import <AdjustSdk/ADJEventSuccess.h>
+#import <AdjustSdk/ADJEventFailure.h>
+#import <AdjustSdk/ADJSessionSuccess.h>
+#import <AdjustSdk/ADJSessionFailure.h>
+#import <AdjustSdk/ADJLogger.h>
 
 static void Put(NSMutableDictionary* data, NSString* key, id value)
 {
